@@ -1,6 +1,9 @@
 package com.andre.dias
 
 import arrow.syntax.function.invoke
+import com.andre.dias.ALGORITHM.A_HEURISTIC_BEST
+import com.andre.dias.ALGORITHM.A_HEURISTIC_SIMPLE
+import com.andre.dias.ALGORITHM.UNIFORM_COST
 import com.andre.dias.Movement.DOWN
 import com.andre.dias.Movement.LEFT
 import com.andre.dias.Movement.RIGHT
@@ -11,7 +14,10 @@ typealias PuzzleList = List<MutableList<Int?>>
 
 class EightPuzzle {
     private val CORRECT_POSITIONS_MAX = 9
+    private val SELECTED_ALGORITHM = UNIFORM_COST
+
     private var maxPoints = 0
+    private var maxFronteira = 0
 
     private val initialState: PuzzleList = listOf(
         mutableListOf(8, 7, 1),
@@ -42,19 +48,26 @@ class EightPuzzle {
         else -> throw Exception("unknown position")
     }
 
+    private fun isGoal(state: PuzzleList): Boolean {
+        maxPoints = calculateCost(state)
+        return maxPoints == CORRECT_POSITIONS_MAX
+    }
+
     private fun calculateCost(state: PuzzleList): Int {
-        var points = 0
-
-        state.forEachIndexed { index, row ->
-            val rowGoal = goalState[index]
-            row.forEachIndexed { indexRow, item ->
-                if (rowGoal[indexRow] == item) points++
-            }
+        return when (SELECTED_ALGORITHM) {
+            UNIFORM_COST -> uniformCost(state)
+            A_HEURISTIC_SIMPLE -> TODO()
+            A_HEURISTIC_BEST -> TODO()
         }
+    }
 
-        maxPoints = points
-
-        return points
+    private fun uniformCost(state: PuzzleList): Int {
+        return state.mapIndexed { index, row ->
+            val rowGoal = goalState[index]
+            row.mapIndexed { indexRow, item ->
+                if (rowGoal[indexRow] == item) 1 else 0
+            }.sum()
+        }.sum()
     }
 
     private fun findActualPosition(state: PuzzleList): Pair<Int?, Int?> {
@@ -66,14 +79,15 @@ class EightPuzzle {
         return Pair(null, null)
     }
 
-    private fun checkIfIsGoal(state: PuzzleList) {
-        calculateCost(state)
-    }
-
     private fun exists(list: List<State>, state: State) = list.any { es -> es.toString() == state.toString() }
 
-    private fun Movement.applyMovement(newState: PuzzleList, actual: Pair<Int, Int>, movements: List<State>): State {
-        val (x, y) = actual
+    private fun Movement.applyMovement(
+        newState: PuzzleList,
+        actualEmptyPosition: Pair<Int, Int>,
+        pastMovements: List<State>
+    ): State {
+        val (x, y) = actualEmptyPosition
+
         val newX = x + this.x
         val newY = y + this.y
 
@@ -83,7 +97,7 @@ class EightPuzzle {
         newState[y][x] = newPosition
         newState[newY][newX] = actualPosition
 
-        return State(newState, calculateCost(newState), movements)
+        return State(newState, calculateCost(newState), pastMovements)
     }
 
     fun start() {
@@ -95,13 +109,19 @@ class EightPuzzle {
             val actualState = openStates.first()
             val (state, _, movements) = actualState
 
-            checkIfIsGoal(state)
-
             val hasBeenExplored = exists(exploredStates, actualState)
             if (hasBeenExplored) {
                 openStates.remove(actualState)
                 continue
             }
+
+            checkFronteiraAndUpdate()
+
+            exploredStates.add(actualState)
+            openStates.remove(actualState)
+
+            val goal = isGoal(state)
+            if (goal) break
 
             val (x, y) = findActualPosition(state)
 
@@ -110,15 +130,16 @@ class EightPuzzle {
 
             val availableMovements: List<Movement> = availableMovements(x, y)
 
-            availableMovements.generateMovements(movements + actualState, x to y, state)
+            availableMovements.generateMovements(state, movements + actualState, x to y)
 
-            openStates.remove(actualState)
-            exploredStates.add(actualState)
-
-            openStates = openStates.sortedByDescending(State::correctPositions).toMutableList()
+            openStates = openStates.sortedByDescending(State::cost).toMutableList()
         }
 
         showResult()
+    }
+
+    private fun checkFronteiraAndUpdate() {
+        if (openStates.size > maxFronteira) maxFronteira = openStates.size
     }
 
     private fun showResult() {
@@ -130,13 +151,17 @@ class EightPuzzle {
         finalState.show()
 
         println("O total de nodos visitados: ${exploredStates.size}")
-        println("O total de nodos expandidos/criados: ${openStates.size + exploredStates.size}")
-        println("O maior tamanho da fronteira durante a busca: ${openStates.size}")
+        println("O total de nodos expandidos/criados: ${openStates.size}")
+        println("O maior tamanho da fronteira durante a busca: $maxFronteira")
         println("O tamanho do caminho: ${finalState.allStates.size} ")
     }
 
-    private fun List<Movement>.generateMovements(newMovements: List<State>, pair: Pair<Int, Int>, state: PuzzleList) {
-        this.map { movement -> movement.applyMovement(state.copy(), pair, newMovements) }
+    private fun List<Movement>.generateMovements(
+        state: PuzzleList,
+        pastMovements: List<State>,
+        actualEmptyPosition: Pair<Int, Int>
+    ) {
+        this.map { movement -> movement.applyMovement(state.copy(), actualEmptyPosition, pastMovements) }
             .filterNot((::exists)(openStates))
             .forEach(openStates::add)
     }
