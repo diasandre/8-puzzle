@@ -14,19 +14,15 @@ import kotlin.math.abs
 typealias PuzzleList = List<MutableList<Int?>>
 
 private const val CORRECT_POSITIONS_MAX = 9
-private val SELECTED_ALGORITHM = UNIFORM_COST
+private val SELECTED_ALGORITHM = A_HEURISTIC_SIMPLE
 
 class EightPuzzle {
 
     private val initialState: PuzzleList = listOf(
-        mutableListOf(null, 1, 2),
-        mutableListOf(4, 5, 3),
-        mutableListOf(7, 8, 6)
+        mutableListOf(8, 7, 1),
+        mutableListOf(6, null, 2),
+        mutableListOf(5, 4, 3)
     )
-
-    //    mutableListOf(8, 7, 1),
-    //    mutableListOf(6, null, 2),
-    //    mutableListOf(5, 4, 3)
 
     private val goalState: PuzzleList = listOf(
         mutableListOf(1, 2, 3),
@@ -62,10 +58,10 @@ class EightPuzzle {
                 continue
             }
 
-            checkFronteiraAndUpdate()
-
             exploredStates.add(actualState)
             openStates.remove(actualState)
+
+            checkFronteiraAndUpdate()
 
             val goal = isGoal(state)
             if (goal) {
@@ -136,7 +132,7 @@ class EightPuzzle {
         actualEmptyPosition: Pair<Int, Int>,
         pastMovements: List<State>
     ): State {
-        val (actualState, cost) = state
+        val (actualState, _, allStates) = state
         val newState = actualState.copy()
 
         val (x, y) = actualEmptyPosition
@@ -152,15 +148,15 @@ class EightPuzzle {
 
         return State(
             newState,
-            calculateCost(newState, cost),
+            calculateCost(newState, allStates.size),
             pastMovements
         )
     }
 
-    private fun calculateCost(state: PuzzleList, pastMovement: Int = 0): Int = when (SELECTED_ALGORITHM) {
-        UNIFORM_COST -> pastMovement + 1
-        A_HEURISTIC_SIMPLE -> incorrectPositions(state)
-        A_HEURISTIC_BEST -> heuristicBest(state)
+    private fun calculateCost(state: PuzzleList, lastMovements: Int = 0): Int = when (SELECTED_ALGORITHM) {
+        UNIFORM_COST -> lastMovements + 1
+        A_HEURISTIC_SIMPLE -> lastMovements + 1 + incorrectPositions(state)
+        A_HEURISTIC_BEST -> lastMovements + 1 + heuristicBest(state)
     }
 
     private fun incorrectPositions(state: PuzzleList) =
