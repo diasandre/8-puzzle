@@ -1,4 +1,4 @@
-package com.andre.dias
+package com.andre.dias.enums
 
 enum class ALGORITHM {
     UNIFORM_COST,

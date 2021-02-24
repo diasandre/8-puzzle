@@ -1,6 +1,8 @@
-package com.andre.dias
+package com.andre.dias.util
 
-class Util {
+import com.andre.dias.model.State
+
+class StringUtil {
     companion object {
         fun State.show() {
             val (one, two, three) = actualState

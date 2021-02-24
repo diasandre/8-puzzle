@@ -1,4 +1,6 @@
-package com.andre.dias
+package com.andre.dias.model
+
+import com.andre.dias.PuzzleList
 
 data class State(
     val actualState: PuzzleList,

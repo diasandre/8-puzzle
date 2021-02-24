@@ -1,20 +1,22 @@
 package com.andre.dias
 
 import arrow.syntax.function.invoke
-import com.andre.dias.ALGORITHM.A_HEURISTIC_BEST
-import com.andre.dias.ALGORITHM.A_HEURISTIC_SIMPLE
-import com.andre.dias.ALGORITHM.UNIFORM_COST
-import com.andre.dias.Movement.DOWN
-import com.andre.dias.Movement.LEFT
-import com.andre.dias.Movement.RIGHT
-import com.andre.dias.Movement.UP
-import com.andre.dias.Util.Companion.show
+import com.andre.dias.enums.ALGORITHM.A_HEURISTIC_BEST
+import com.andre.dias.enums.ALGORITHM.A_HEURISTIC_SIMPLE
+import com.andre.dias.enums.ALGORITHM.UNIFORM_COST
+import com.andre.dias.enums.Movement.DOWN
+import com.andre.dias.enums.Movement.LEFT
+import com.andre.dias.enums.Movement.RIGHT
+import com.andre.dias.enums.Movement.UP
+import com.andre.dias.util.StringUtil.Companion.show
+import com.andre.dias.enums.Movement
+import com.andre.dias.model.State
 import kotlin.math.abs
 
 typealias PuzzleList = List<MutableList<Int?>>
 
 private const val CORRECT_POSITIONS_MAX = 9
-private val SELECTED_ALGORITHM = A_HEURISTIC_SIMPLE
+private val SELECTED_ALGORITHM = A_HEURISTIC_BEST
 
 class EightPuzzle {
 
