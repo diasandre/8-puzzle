@@ -1,9 +1,10 @@
 package com.andre.dias
 
 import arrow.syntax.function.invoke
-import com.andre.dias.enums.ALGORITHM.A_HEURISTIC_BEST
-import com.andre.dias.enums.ALGORITHM.A_HEURISTIC_SIMPLE
-import com.andre.dias.enums.ALGORITHM.UNIFORM_COST
+import com.andre.dias.enums.Algorithm
+import com.andre.dias.enums.Algorithm.A_HEURISTIC_BEST
+import com.andre.dias.enums.Algorithm.A_HEURISTIC_SIMPLE
+import com.andre.dias.enums.Algorithm.UNIFORM_COST
 import com.andre.dias.enums.Movement.DOWN
 import com.andre.dias.enums.Movement.LEFT
 import com.andre.dias.enums.Movement.RIGHT
@@ -16,15 +17,12 @@ import kotlin.math.abs
 typealias PuzzleList = List<MutableList<Int?>>
 
 private const val CORRECT_POSITIONS_MAX = 9
-private val SELECTED_ALGORITHM = A_HEURISTIC_BEST
 
-class EightPuzzle {
+class EightPuzzle(state: PuzzleList, algorithm: Algorithm) {
 
-    private val initialState: PuzzleList = listOf(
-        mutableListOf(8, 7, 1),
-        mutableListOf(6, null, 2),
-        mutableListOf(5, 4, 3)
-    )
+    private val initialState: PuzzleList = state
+
+    private val SELECTED_ALGORITHM = algorithm
 
     private val goalState: PuzzleList = listOf(
         mutableListOf(1, 2, 3),
@@ -46,10 +44,7 @@ class EightPuzzle {
     private var finalState: State? = null
 
     fun start() {
-        println("-----------------------------------");
-        println("             8Puzzle               ");
-        println("-----------------------------------");
-
+        println("iniciando a busca")
         while (maxPoints != CORRECT_POSITIONS_MAX) {
             val actualState = openStates.first()
             val (state, _, movements) = actualState
