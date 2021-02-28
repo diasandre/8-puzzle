@@ -27,7 +27,7 @@ fun main() {
 
     val firstRow = initialState.substring(0, 3).map(::toRow).toMutableList()
     val secondRow = initialState.substring(3, 6).map(::toRow).toMutableList()
-    val thirdRow = initialState.substring(6, 9).map(::toRow).toMutableList() ?: mutableListOf()
+    val thirdRow = initialState.substring(6, 9).map(::toRow).toMutableList()
 
     if (firstRow.isEmpty() ||
         secondRow.isEmpty() ||
@@ -50,10 +50,10 @@ fun main() {
         1 -> Algorithm.UNIFORM_COST
         2 -> Algorithm.A_HEURISTIC_SIMPLE
         3 -> Algorithm.A_HEURISTIC_BEST
-        else -> throw Exception("escolha um dos algoritmos existentes")
+        else -> throw Exception("Escolha um dos algoritmos existentes!")
     }
 
-    println("dependendo do estado inicial, o algoritmo pode demorar bastante para achar uma solução")
+    println("Dependendo do estado inicial, o algoritmo pode demorar bastante para achar uma solução!")
 
     EightPuzzle(state, algorithm).start()
 }
