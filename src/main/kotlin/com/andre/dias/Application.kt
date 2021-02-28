@@ -12,16 +12,29 @@ fun main() {
 
     val initialState = readLine()
 
-    val firstRow = initialState?.substring(0, 3)?.map(::toRow)?.toMutableList() ?: mutableListOf()
-    val secondRow = initialState?.substring(3, 6)?.map(::toRow)?.toMutableList() ?: mutableListOf()
-    val thirdRow = initialState?.substring(6, 9)?.map(::toRow)?.toMutableList() ?: mutableListOf()
+    if (initialState.isNullOrEmpty() || initialState.length > 9 || initialState.length < 9) throw Exception("Insira um estado corretamente!")
+
+    if (!initialState.contains("0") ||
+        !initialState.contains("1") ||
+        !initialState.contains("2") ||
+        !initialState.contains("3") ||
+        !initialState.contains("4") ||
+        !initialState.contains("5") ||
+        !initialState.contains("6") ||
+        !initialState.contains("7") ||
+        !initialState.contains("8")
+    ) throw Exception("Insira um estado corretamente!")
+
+    val firstRow = initialState.substring(0, 3).map(::toRow).toMutableList()
+    val secondRow = initialState.substring(3, 6).map(::toRow).toMutableList()
+    val thirdRow = initialState.substring(6, 9).map(::toRow).toMutableList() ?: mutableListOf()
 
     if (firstRow.isEmpty() ||
         secondRow.isEmpty() ||
         thirdRow.isEmpty() ||
-        firstRow.size < 3 ||
-        secondRow.size < 3 ||
-        thirdRow.size < 3
+        firstRow.toSet().size < 3 ||
+        secondRow.toSet().size < 3 ||
+        thirdRow.toSet().size < 3
     ) throw Exception(
         "O estado está incorreto, tente novamente!"
     )

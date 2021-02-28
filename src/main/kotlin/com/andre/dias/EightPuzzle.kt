@@ -44,7 +44,7 @@ class EightPuzzle(state: PuzzleList, algorithm: Algorithm) {
     private var finalState: State? = null
 
     fun start() {
-        println("iniciando a busca")
+        println("iniciando a busca...")
         while (maxPoints != CORRECT_POSITIONS_MAX) {
             val actualState = openStates.first()
             val (state, _, movements) = actualState
